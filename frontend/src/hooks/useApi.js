@@ -2,9 +2,7 @@ import { useAuth } from './useAuth'
 
 // En production (Render), utiliser l'URL du backend Render
 // En développement, utiliser le proxy Vite (localhost:3001)
-const API_BASE = import.meta.env.VITE_API_URL || ''
-
-export function useApi() {
+const API_BASE = import.meta.env.VITE_API_URL || 'https://bjc-erp-backend.onrender.com'export function useApi() {
   const { token, logout } = useAuth()
 
   const request = async (url, options = {}) => {

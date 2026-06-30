@@ -17,14 +17,14 @@ const PASSWORDS = {
 };
 
 async function main() {
-  const pool = await mysql.createConnection({
-    host:     process.env.DB_HOST     || 'localhost',
-    port:     process.env.DB_PORT     || 3306,
-    user:     process.env.DB_USER     || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME     || 'imprimerie_bjc'
-  });
-
+const pool = await mysql.createConnection({
+  host:     process.env.DB_HOST,
+  port:     parseInt(process.env.DB_PORT) || 4000,
+  user:     process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl:      { rejectUnauthorized: true }
+});
   console.log('🔐 Migration des mots de passe...\n');
 
   for (const [nom, pwd] of Object.entries(PASSWORDS)) {
