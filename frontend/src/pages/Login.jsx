@@ -11,7 +11,7 @@ export default function Login() {
 
   // Charge la liste des noms d'utilisateurs (endpoint public minimal)
   useEffect(() => {
-    fetch('/api/auth/users-list')
+   fetch('https://bjc-erp-backend.onrender.com/api/auth/users-list')
       .then(r => r.json())
       .then(d => { setUsers(d); if (d.length) setSelected(d[0].nom_utilisateur) })
       .catch(() => setUsers([]))
@@ -22,7 +22,7 @@ export default function Login() {
     if (!selected || !password) return toast.error('Renseignez vos identifiants')
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('https://bjc-erp-backend.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nom_utilisateur: selected, mot_de_passe: password })
