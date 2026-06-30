@@ -1,0 +1,42 @@
+================================================================
+  COMMENT AJOUTER VOTRE LOGO ET CACHET
+================================================================
+
+1. PRÉPARER LES FICHIERS
+----------------------------------------------------------------
+
+   Préparez 2 images :
+   - logo.png     : votre logo BJC (idéal : 300x100 pixels)
+   - cachet.png   : votre cachet/tampon (idéal : 200x200 pixels)
+
+   Format recommandé : PNG avec fond transparent
+
+
+2. PLACER LES FICHIERS
+----------------------------------------------------------------
+
+   Copiez les fichiers dans :
+     bjc-erp\frontend\public\logo.png
+     bjc-erp\frontend\public\cachet.png
+
+
+3. LE LOGO APPARAÎT AUTOMATIQUEMENT
+----------------------------------------------------------------
+
+   Une fois les fichiers en place, le logo s'affiche :
+   - Dans la barre de navigation de l'application
+   - Sur toutes les factures imprimées
+   - Sur tous les bons de commande et bons de livraison
+   - Sur la page de connexion
+
+
+4. VÉRIFICATION
+----------------------------------------------------------------
+
+   Rechargez l'application dans le navigateur (F5)
+   et vérifiez que votre logo apparaît en haut à gauche.
+
+   Pour les impressions, ouvrez une facture et cliquez
+   sur "Imprimer" — votre logo sera en haut du document.
+
+================================================================

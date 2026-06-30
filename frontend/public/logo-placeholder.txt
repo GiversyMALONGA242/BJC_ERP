@@ -1,0 +1,5 @@
+Remplacez ce dossier par vos fichiers :
+  logo.png   — votre logo BJC (300x100 px recommandé)
+  cachet.png — votre tampon/cachet (200x200 px recommandé)
+
+Voir le fichier AJOUTER-LOGO-CACHET.txt pour les instructions.

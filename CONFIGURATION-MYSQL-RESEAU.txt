@@ -1,0 +1,116 @@
+================================================================
+  CONFIGURATION MYSQL POUR ACCÈS RÉSEAU LOCAL
+  À faire UNE SEULE FOIS sur le PC serveur
+================================================================
+
+PROBLÈME : Par défaut MySQL n'accepte les connexions
+que depuis "localhost". Les autres PCs du réseau ne
+peuvent pas se connecter.
+
+SOLUTION EN 3 ÉTAPES :
+================================================================
+
+
+ÉTAPE 1 — Modifier le fichier de configuration MySQL
+----------------------------------------------------------------
+
+1. Trouvez le fichier  my.ini  (ou my.cnf sur Mac/Linux)
+   Emplacements habituels sur Windows :
+     C:\ProgramData\MySQL\MySQL Server 8.0\my.ini
+     C:\Program Files\MySQL\MySQL Server 8.0\my.ini
+
+2. Ouvrez-le avec le Bloc-notes en tant qu'Administrateur
+   (clic droit → "Exécuter en tant qu'administrateur")
+
+3. Cherchez la ligne :
+     bind-address = 127.0.0.1
+
+4. Remplacez-la par :
+     bind-address = 0.0.0.0
+
+   (Si la ligne n'existe pas, ajoutez-la sous [mysqld])
+
+5. Sauvegardez le fichier
+
+6. Redémarrez le service MySQL :
+   - Ouvrez le Gestionnaire des tâches (Ctrl+Shift+Esc)
+   - Onglet "Services"
+   - Trouvez "MySQL80" ou "MySQL"
+   - Clic droit → Redémarrer
+
+
+ÉTAPE 2 — Autoriser l'utilisateur root depuis le réseau
+----------------------------------------------------------------
+
+Ouvrez MySQL Workbench et exécutez :
+
+-- Autoriser root depuis n'importe quelle IP du réseau local
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'VOTRE_MOT_DE_PASSE';
+GRANT ALL PRIVILEGES ON imprimerie_bjc_v2.* TO 'root'@'%';
+FLUSH PRIVILEGES;
+
+IMPORTANT : Remplacez VOTRE_MOT_DE_PASSE par votre
+vrai mot de passe MySQL.
+
+Ou créer un utilisateur dédié plus sécurisé :
+CREATE USER 'bjc_user'@'%' IDENTIFIED BY 'BJC2026_secure!';
+GRANT ALL PRIVILEGES ON imprimerie_bjc_v2.* TO 'bjc_user'@'%';
+FLUSH PRIVILEGES;
+
+Si vous créez bjc_user, mettez à jour backend/.env :
+  DB_USER=bjc_user
+  DB_PASSWORD=BJC2026_secure!
+
+
+ÉTAPE 3 — Ouvrir le port dans le pare-feu Windows
+----------------------------------------------------------------
+
+1. Ouvrez "Pare-feu Windows Defender avec sécurité avancée"
+   (cherchez dans le menu Démarrer)
+
+2. Cliquez sur "Règles de trafic entrant"
+
+3. Cliquez sur "Nouvelle règle..." à droite
+
+4. Sélectionnez "Port" → Suivant
+
+5. TCP, port spécifique : 3306 → Suivant
+
+6. "Autoriser la connexion" → Suivant
+
+7. Cochez les 3 cases (Domaine, Privé, Public) → Suivant
+
+8. Nom : "MySQL BJC" → Terminer
+
+Faites la même chose pour les ports 3001 et 5173
+(ports de l'application ERP).
+
+
+VÉRIFICATION
+----------------------------------------------------------------
+
+Depuis un autre PC sur le même réseau WiFi, ouvrez un
+navigateur et tapez :
+
+  http://IP_DU_SERVEUR:5173
+
+Exemple : http://192.168.1.15:5173
+
+Pour trouver l'IP du serveur, sur le PC serveur tapez
+dans CMD :  ipconfig
+Cherchez "Adresse IPv4"
+
+
+POURQUOI L'APPLICATION EST LENTE SUR LE RÉSEAU ?
+----------------------------------------------------------------
+
+C'est normal la première fois car le navigateur du
+téléphone charge tous les fichiers. Après la première
+visite, c'est mis en cache et c'est rapide.
+
+Pour encore plus de rapidité, utilisez la version
+PM2 + Build (installer-pm2.bat) qui compile le
+frontend en fichiers optimisés servis directement
+par le backend sur un seul port : 3001.
+
+================================================================

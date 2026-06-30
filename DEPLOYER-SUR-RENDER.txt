@@ -1,0 +1,185 @@
+================================================================
+  IMPRIMERIE BJC -- DEPLOIEMENT SUR RENDER (GRATUIT)
+================================================================
+  Duree estimee : 30 minutes
+  Cout : GRATUIT
+================================================================
+
+
+ETAPE 1 -- CREER LES COMPTES (si pas encore fait)
+----------------------------------------------------------------
+
+1. GitHub   : https://github.com       (compte gratuit)
+2. Render   : https://render.com       (compte gratuit)
+3. Railway  : https://railway.app      (compte gratuit)
+
+
+ETAPE 2 -- BASE DE DONNEES MYSQL SUR RAILWAY
+----------------------------------------------------------------
+
+1. Connectez-vous sur https://railway.app avec GitHub
+
+2. Cliquez "New Project" --> "Deploy MySQL"
+
+3. Attendez 1 minute que MySQL demarre
+
+4. Cliquez sur le service MySQL --> onglet "Variables"
+   Notez ces 4 valeurs :
+     MYSQLHOST    = xxx.railway.internal
+     MYSQLPORT    = 3306 (ou autre)
+     MYSQLUSER    = root
+     MYSQLPASSWORD= xxxxxxxxxx
+     MYSQLDATABASE= railway
+
+5. Importez le schema :
+   - Cliquez sur votre service MySQL --> "Query"
+   - Copiez-collez tout le contenu de bjc_schema_final.sql
+   - Cliquez "Run Query"
+   - Vous devez voir "17 tables created"
+
+6. Creez les utilisateurs :
+   Copiez-collez ceci dans Query et executez :
+
+   INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe_hash, role) VALUES
+   ('Admin',     '$2a$12$PLACEHOLDER', 'PDG'),
+   ('Christ',    '$2a$12$PLACEHOLDER', 'PDG'),
+   ('Roland',    '$2a$12$PLACEHOLDER', 'COMPTABLE'),
+   ('LOUISIANA', '$2a$12$PLACEHOLDER', 'CAISSIERE');
+
+   NOTE : Les vrais hash seront generes par migrate-passwords.js
+   Pour l instant mettez n importe quoi, vous changerez depuis l interface
+
+
+ETAPE 3 -- METTRE LE CODE SUR GITHUB
+----------------------------------------------------------------
+
+Sur votre PC, ouvrez CMD dans le dossier bjc-erp et tapez :
+
+   git init
+   git add .
+   git commit -m "BJC ERP v2.1"
+
+Creez un depot sur GitHub.com :
+   - Cliquez "+" en haut --> "New repository"
+   - Nom : bjc-erp
+   - Visibilite : Private
+   - Cliquez "Create repository"
+
+Liez et envoyez :
+   git remote add origin https://github.com/VOTRE_NOM/bjc-erp.git
+   git branch -M main
+   git push -u origin main
+
+
+ETAPE 4 -- DEPLOYER LE BACKEND SUR RENDER
+----------------------------------------------------------------
+
+1. Connectez-vous sur https://render.com avec GitHub
+
+2. Cliquez "New +" --> "Web Service"
+
+3. Connectez votre depot GitHub "bjc-erp"
+
+4. Configurez :
+     Name        : bjc-erp-backend
+     Root Dir    : backend
+     Runtime     : Node
+     Build Cmd   : npm install
+     Start Cmd   : node server.js
+     Instance    : Free
+
+5. Cliquez "Advanced" --> "Add Environment Variables"
+   Ajoutez une par une :
+
+     DB_HOST       = [valeur MYSQLHOST de Railway]
+     DB_PORT       = [valeur MYSQLPORT de Railway]
+     DB_USER       = root
+     DB_PASSWORD   = [valeur MYSQLPASSWORD de Railway]
+     DB_NAME       = railway
+     JWT_SECRET    = BJC_2026_KONGO_SECRET_TRES_LONG_ICI
+     NODE_ENV      = production
+     ARCHIVES_DIR  = /tmp/BJC_Archives
+
+6. Cliquez "Create Web Service"
+   Attendez 3-5 minutes que le build se termine
+
+7. Notez l URL donnee par Render, exemple :
+     https://bjc-erp-backend.onrender.com
+
+8. Testez dans le navigateur :
+     https://bjc-erp-backend.onrender.com/api/health
+   Vous devez voir : {"status":"OK","app":"BJC ERP"}
+
+
+ETAPE 5 -- DEPLOYER LE FRONTEND SUR RENDER
+----------------------------------------------------------------
+
+1. Cliquez "New +" --> "Static Site"
+
+2. Connectez le meme depot GitHub "bjc-erp"
+
+3. Configurez :
+     Name        : bjc-erp-frontend
+     Root Dir    : frontend
+     Build Cmd   : npm install && npm run build
+     Publish Dir : dist
+
+4. Ajoutez cette variable d environnement :
+     VITE_API_URL = https://bjc-erp-backend.onrender.com
+     (remplacez par votre vraie URL backend)
+
+5. Cliquez "Create Static Site"
+   Attendez 5-10 minutes
+
+6. Render vous donne une URL :
+     https://bjc-erp-frontend.onrender.com
+
+   C EST L URL DE VOTRE ERP ACCESSIBLE PARTOUT DANS LE MONDE !
+
+
+ETAPE 6 -- CREER LES VRAIS MOTS DE PASSE
+----------------------------------------------------------------
+
+Une fois le backend en ligne, ouvrez CMD et tapez :
+
+   cd E:\bjc-erp\backend
+   npm install
+
+   Editez backend\.env avec les infos Railway :
+     DB_HOST=xxx.railway.internal
+     DB_PASSWORD=xxxxx
+     DB_NAME=railway
+
+   Puis :
+     node scripts/migrate-passwords.js
+
+   Les mots de passe seront mis a jour dans Railway.
+
+
+CONNEXION FINALE
+----------------------------------------------------------------
+
+Ouvrez dans votre navigateur (PC, telephone, partout) :
+  https://bjc-erp-frontend.onrender.com
+
+Utilisateur : Admin
+Mot de passe : 820108
+
+ATTENTION : Sur le plan gratuit de Render, le backend
+"s endort" apres 15 min d inactivite. La premiere connexion
+peut prendre 30-60 secondes. C est normal.
+
+Pour eviter ca --> abonnement Render Starter a 7$/mois
+
+
+================================================================
+  RECAPITULATIF DES URLS FINALES
+================================================================
+
+  Base de donnees : Railway (mysql)
+  Backend API     : https://bjc-erp-backend.onrender.com
+  Application web : https://bjc-erp-frontend.onrender.com
+
+  Modifiez ce fichier avec vos vraies URLs une fois deploye.
+
+================================================================

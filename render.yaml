@@ -1,0 +1,44 @@
+# render.yaml - Configuration automatique Render
+# Placer ce fichier a la RACINE du projet bjc-erp
+
+services:
+  # Backend Node.js
+  - type: web
+    name: bjc-erp-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ARCHIVES_DIR
+        value: /tmp/BJC_Archives
+      - key: FRONTEND_URL
+        sync: false
+
+  # Frontend React (site statique)
+  - type: web
+    name: bjc-erp-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
