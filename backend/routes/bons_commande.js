@@ -12,19 +12,19 @@ async function nextNumeroBC(conn) {
   return `BJCBC-${s.dernier_numero}`;
 }
 
-// GET liste
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT bc.*, c.nom_client, c.telephone, c.adresse,
+      SELECT bc.id, bc.numero_bc, bc.date_commande, bc.statut, 
+             c.nom_client, c.telephone, c.adresse,
              u.nom_utilisateur,
              COUNT(bcd.id) AS nb_lignes,
-             SUM(bcd.quantite*bcd.prix_unitaire_ht) AS montant_total
+             SUM(IFNULL(bcd.quantite, 0) * IFNULL(bcd.prix_unitaire_ht, 0)) AS montant_total
       FROM bons_commande bc
-      JOIN clients c ON bc.id_client=c.id
-      LEFT JOIN utilisateurs u ON bc.id_utilisateur=u.id
-      LEFT JOIN bons_commande_details bcd ON bc.id=bcd.id_bc
-      GROUP BY bc.id, c.nom_client, c.telephone, c.adresse, u.nom_utilisateur
+      JOIN clients c ON bc.id_client = c.id
+      LEFT JOIN utilisateurs u ON bc.id_utilisateur = u.id
+      LEFT JOIN bons_commande_details bcd ON bc.id = bcd.id_bc
+      GROUP BY bc.id
       ORDER BY bc.date_commande DESC LIMIT 300`);
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
