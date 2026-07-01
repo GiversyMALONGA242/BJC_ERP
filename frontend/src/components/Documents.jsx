@@ -204,7 +204,7 @@ export function ImprimerFacture({ data, onClose }) {
     const tu = d.longueur>0&&d.largeur>0 ? (d.longueur*d.largeur*d.quantite).toFixed(2) : d.quantite
     return [i+1,d.designation_libre||d.service_nom,
             d.longueur>0?d.longueur:'—',d.largeur>0?d.largeur:'—',
-            d.quantite,tu,fmt(d.prix_vente_ht_applique),fmt(d.total_ht_ligne)]
+            d.quantite,tu,fmt(d.prix_vente_ht_applique),fmt(d.total_ht_ligne ?? (d.quantite * d.prix_vente_ht_applique))]
   })
   return (
     <PrintWrapper title={`Facture ${facture.numero_facture}`} onClose={onClose}>
