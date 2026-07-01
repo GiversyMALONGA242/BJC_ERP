@@ -1,8 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { writeFileSync } from 'fs'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'generate-redirects',
+      closeBundle() {
+        writeFileSync('dist/_redirects', '/* /index.html 200\n')
+      }
+    }
+  ],
   server: {
     host: '0.0.0.0',
     port: 5173,
@@ -13,20 +22,7 @@ export default defineConfig({
       }
     }
   },
-  preview: {
-    host: '0.0.0.0',
-    port: 4173
-  },
   build: {
-    outDir: 'dist',
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          charts: ['recharts'],
-        }
-      }
-    }
+    outDir: 'dist'
   }
 })
