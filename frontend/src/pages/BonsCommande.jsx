@@ -94,7 +94,26 @@ export default function BonsCommande() {
 
   const [factureRes, setFactureRes] = useState(null)
 
-
+const convertirFacture = async () => {
+  if (!detail) return;
+  setSaving(true);
+  try {
+    const res = await api.post(`/api/bons-commande/${detail.id}/convertir-facture`, {
+      remise_taux: parseFloat(remise) || 0,
+      tva_active: tva,
+      cad_active: cad
+    });
+    
+    setFactureRes(res);
+    toast.success('Facture et BL créés avec succès');
+    setMode('list');
+    await charger(); // Recharger la liste pour mettre à jour les statuts
+  } catch (err) {
+    toast.error(err.message || "Erreur lors de la conversion");
+  } finally {
+    setSaving(false);
+  }
+};
 
   // Impression
 
