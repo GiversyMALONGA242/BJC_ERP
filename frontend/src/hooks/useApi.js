@@ -6,6 +6,7 @@ export function useApi() {
   const { token, logout } = useAuth()
 
   const request = async (url, options) => {
+    console.log("Token utilisé pour la requête :", token);
     const opts = options || {}
     const fullUrl = API_BASE + url
     const res = await fetch(fullUrl, {
