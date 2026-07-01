@@ -41,8 +41,11 @@ router.get('/:id', async (req, res) => {
               (v.total_ttc - COALESCE(v.montant_paye,0)) AS reste_a_payer
        FROM ventes v JOIN clients c ON v.id_client=c.id WHERE v.id=?`, [req.params.id]);
     if (!v) return res.status(404).json({ error: 'Introuvable' });
-    const [d] = await pool.query(
-      `SELECT vd.*, cs.designation AS service_nom, cs.unite
+        const [d] = await pool.query(
+      `SELECT vd.id, vd.id_vente, vd.id_service, vd.designation_libre,
+              vd.longueur, vd.largeur, vd.quantite, vd.prix_vente_ht_applique,
+              (vd.quantite * vd.prix_vente_ht_applique) AS total_ht_ligne,
+              cs.designation AS service_nom, cs.unite
        FROM ventes_details vd
        LEFT JOIN catalogue_services cs ON vd.id_service=cs.id
        WHERE vd.id_vente=?`, [req.params.id]);
