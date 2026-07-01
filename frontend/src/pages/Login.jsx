@@ -14,7 +14,10 @@ export default function Login() {
   useEffect(() => {
     fetch(BACKEND + '/api/auth/users-list')
       .then(r => r.json())
-      .then(d => { setUsers(d); if (d.length) setSelected(d[0].nom_utilisateur) })
+      .then(d => {
+        setUsers(d)
+        if (d.length) setSelected(d[0].nom_utilisateur)
+      })
       .catch(() => setUsers([]))
   }, [])
 
@@ -44,7 +47,9 @@ export default function Login() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-4">
-            <span className="text-2xl font-bold text-bjc-600">B</span>
+            <img src="/logo.png" alt="BJC"
+              className="h-10 w-auto object-contain"
+              onError={e => { e.target.style.display='none' }} />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-wide">IMPRIMERIE BJC</h1>
           <p className="text-bjc-100 text-sm mt-1">Systeme de gestion</p>
@@ -58,7 +63,7 @@ export default function Login() {
                 <select className="select" value={selected} onChange={e => setSelected(e.target.value)}>
                   {users.map(u => (
                     <option key={u.nom_utilisateur} value={u.nom_utilisateur}>
-                      {u.nom_utilisateur} -- {u.role}
+                      {u.nom_utilisateur}
                     </option>
                   ))}
                 </select>
