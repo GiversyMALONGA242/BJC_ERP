@@ -50,47 +50,15 @@ export default function BonsCommande() {
   // Impression
   const [printData, setPrintData] = useState(null)
 
-  const charger = async () => {
+  const charger = () => {
     setLoading(true)
-    try {
-      // Essayer de charger toutes les donnees en parallele
-      const results = await Promise.allSettled([
-        api.get('/api/bons-commande'),
-        api.get('/api/clients'),
-        api.get('/api/catalogue'),
-        api.get('/api/catalogue/categories')
-      ])
-
-      // Bons de commande
-      if (results[0].status === 'fulfilled') setBcs(results[0].value)
-      else toast.error('Erreur bons de commande: ' + results[0].reason?.message)
-
-      // Clients (CRITIQUE - pour le selecteur)
-      if (results[1].status === 'fulfilled') setClients(results[1].value)
-      else {
-        console.error('Erreur chargement clients:', results[1].reason)
-        toast.error('Impossible de charger les clients')
-        // Fallback: reessayer de charger les clients seuls
-        try {
-          const c = await api.get('/api/clients')
-          setClients(c)
-          toast.success('Clients charges (retry)')
-        } catch (e) { console.error('Retry clients echoue:', e) }
-      }
-
-      // Catalogue
-      if (results[2].status === 'fulfilled') setCatalogue(results[2].value)
-      else console.error('Erreur catalogue:', results[2].reason)
-
-      // Categories
-      if (results[3].status === 'fulfilled') setCategories(results[3].value)
-      else console.error('Erreur categories:', results[3].reason)
-
-    } catch (err) {
-      toast.error('Erreur chargement: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
+    Promise.all([
+      api.get('/api/bons-commande'),
+      api.get('/api/clients'),
+      api.get('/api/catalogue'),
+      api.get('/api/catalogue/categories')
+    ]).then(([b,c,cat,cats]) => { setBcs(b); setClients(c); setCatalogue(cat); setCategories(cats) })
+      .finally(() => setLoading(false))
   }
   useEffect(() => { charger() }, [])
 
@@ -262,29 +230,11 @@ export default function BonsCommande() {
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Client</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">
-                Client * {clients.length > 0 && <span className="text-gray-400">({clients.length} disponible{clients.length>1?'s':''})</span>}
-              </label>
+              <label className="block text-xs text-gray-500 mb-1">Client *</label>
               <select className="select" value={clientId} onChange={e => setClientId(e.target.value)}>
-                <option value="">
-                  {clients.length === 0 ? 'Aucun client charge - Verifiez la connexion' : '— Choisir —'}
-                </option>
+                <option value="">— Choisir —</option>
                 {clients.map(c => <option key={c.id} value={c.id}>{c.nom_client}</option>)}
               </select>
-              {clients.length === 0 && !loading && (
-                <button
-                  onClick={async () => {
-                    try {
-                      const c = await api.get('/api/clients')
-                      setClients(c)
-                      toast.success(`${c.length} client(s) charge(s)`)
-                    } catch (e) { toast.error('Erreur: ' + e.message) }
-                  }}
-                  className="text-xs text-bjc-500 hover:text-bjc-700 underline mt-1"
-                >
-                  Recharger les clients
-                </button>
-              )}
             </div>
             {clientId && (() => {
               const c = clients.find(x => x.id == clientId)
