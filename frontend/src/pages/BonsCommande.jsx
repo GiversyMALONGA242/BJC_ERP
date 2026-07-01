@@ -102,54 +102,29 @@ export default function BonsCommande() {
 
 
 
-  const charger = async () => {
-
+const charger = async () => {
     setLoading(true);
-
     
-
-    // Fonction utilitaire pour éviter qu'une erreur ne casse tout
-
     const safeGet = async (url) => {
-
       try {
-
         const res = await api.get(url);
-
         return res;
-
       } catch (e) {
-
         console.error(`Erreur chargement ${url}:`, e);
-
-        return []; // Retourne un tableau vide en cas d'erreur
-
+        return [];
       }
-
     };
 
-
-
     const b = await safeGet('/api/bons-commande');
-
     const c = await safeGet('/api/clients');
-
     const cat = await safeGet('/api/catalogue');
-
     const cats = await safeGet('/api/catalogue/categories');
 
-
-
     setBcs(b);
-
     setClients(c);
-
     setCatalogue(cat);
-
     setCategories(cats);
-
-    setLoading(false);
-
+    setLoading(false); // On s'assure que le chargement est terminé
   }
 
   useEffect(() => { charger() }, [])
