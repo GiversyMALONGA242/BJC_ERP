@@ -82,19 +82,7 @@ export default function BonsCommande() {
 
   })
 
-
-
-  // Convertir
-
-  const [remise, setRemise] = useState(0)
-
-  const [tva, setTva]       = useState(false)
-
-  const [cad, setCad]       = useState(false)
-
-  const [factureRes, setFactureRes] = useState(null)
-
-const convertirFacture = async () => {
+  const convertirFacture = async () => {
   if (!detail) return;
   setSaving(true);
   try {
@@ -114,6 +102,18 @@ const convertirFacture = async () => {
     setSaving(false);
   }
 };
+
+
+
+  // Convertir
+
+  const [remise, setRemise] = useState(0)
+
+  const [tva, setTva]       = useState(false)
+
+  const [cad, setCad]       = useState(false)
+
+  const [factureRes, setFactureRes] = useState(null)
 
   // Impression
 
