@@ -15,19 +15,23 @@ async function nextNumeroBC(conn) {
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(`
-      SELECT bc.id, bc.numero_bc, bc.date_commande, bc.statut, 
+      SELECT bc.id, bc.numero_bc, bc.date_commande, bc.statut, bc.notes,
              c.nom_client, c.telephone, c.adresse,
              u.nom_utilisateur,
              COUNT(bcd.id) AS nb_lignes,
              SUM(IFNULL(bcd.quantite, 0) * IFNULL(bcd.prix_unitaire_ht, 0)) AS montant_total
       FROM bons_commande bc
-      JOIN clients c ON bc.id_client = c.id
+      INNER JOIN clients c ON bc.id_client = c.id
       LEFT JOIN utilisateurs u ON bc.id_utilisateur = u.id
       LEFT JOIN bons_commande_details bcd ON bc.id = bcd.id_bc
-      GROUP BY bc.id
+      GROUP BY bc.id, bc.numero_bc, bc.date_commande, bc.statut, bc.notes, 
+               c.nom_client, c.telephone, c.adresse, u.nom_utilisateur
       ORDER BY bc.date_commande DESC LIMIT 300`);
     res.json(rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error("Erreur SQL:", err); // Ajout d'un log pour voir l'erreur précise dans la console serveur
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 // GET detail
