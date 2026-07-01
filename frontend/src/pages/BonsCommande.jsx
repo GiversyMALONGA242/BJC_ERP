@@ -50,33 +50,27 @@ export default function BonsCommande() {
   // Impression
   const [printData, setPrintData] = useState(null)
 
-  const charger = async () => {
+ const charger = async () => {
     setLoading(true);
     try {
-      console.log("--- Début du chargement des données ---");
-      
-      const bcsData = await api.get('/api/bons-commande');
-      const clientsData = await api.get('/api/clients');
-      const catalogueData = await api.get('/api/catalogue');
-      const categoriesData = await api.get('/api/catalogue/categories');
+      // On charge les données individuellement pour éviter qu'une erreur bloque tout
+      const bcsData = await api.get('/api/bons-commande').catch(e => { console.error("Erreur BC", e); return []; });
+      const clientsData = await api.get('/api/clients').catch(e => { console.error("Erreur Clients", e); return []; });
+      const catalogueData = await api.get('/api/catalogue').catch(e => { console.error("Erreur Catalogue", e); return []; });
+      const categoriesData = await api.get('/api/catalogue/categories').catch(e => { console.error("Erreur Categories", e); return []; });
 
-      console.log("BCs reçus :", bcsData);
-      console.log("Clients reçus :", clientsData);
-      console.log("Catalogue reçu :", catalogueData);
-      console.log("Catégories reçues :", categoriesData);
-
+      // Mise à jour sécurisée des états
       setBcs(Array.isArray(bcsData) ? bcsData : []);
       setClients(Array.isArray(clientsData) ? clientsData : []);
       setCatalogue(Array.isArray(catalogueData) ? catalogueData : []);
       setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       
     } catch (err) {
-      console.error("ERREUR CRITIQUE DANS L'API :", err);
+      console.error("Erreur fatale:", err);
     } finally {
       setLoading(false);
     }
-  }
-
+  };
   const selectBC = async (bc) => {
     setSelected(bc.id)
     const d = await api.get(`/api/bons-commande/${bc.id}`)
