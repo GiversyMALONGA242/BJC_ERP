@@ -225,41 +225,30 @@ export default function BonsCommande() {
           <h1 className="text-xl font-bold text-gray-900">{titre}</h1>
         </div>
 
-       {/* Client */}
-<div className="card p-5">
-  <h2 className="text-sm font-semibold text-gray-700 mb-3">Client</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-    <div>
-      <label className="block text-xs text-gray-500 mb-1">Client *</label>
-      <select 
-        className="select" 
-        value={clientId} 
-        onChange={e => setClientId(e.target.value)}
-      >
-        <option value="">— Choisir —</option>
-        {/* On s'assure que 'clients' est bien un tableau avant de faire le map */}
-        {Array.isArray(clients) && clients.map(c => (
-          <option key={c.id} value={c.id}>
-            {c.nom_client || c.nom || "Client sans nom"}
-          </option>
-        ))}
-      </select>
-    </div>
-    
-    {/* Affichage des détails du client sélectionné */}
-    {clientId && (() => {
-      const c = clients.find(x => x.id == clientId)
-      console.log("Liste des clients reçue :", clients);
-      return c ? (
-        <div className="bg-bjc-50 rounded-lg p-3 text-xs space-y-1">
-          <p className="font-medium text-bjc-700">{c.nom_client || c.nom}</p>
-          {c.telephone && <p className="text-gray-500">Tel : {c.telephone}</p>}
-          {c.adresse && <p className="text-gray-500">{c.adresse}</p>}
+        {/* Client */}
+        <div className="card p-5">
+          <h2 className="text-sm font-semibold text-gray-700 mb-3">Client</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Client *</label>
+              <select className="select" value={clientId} onChange={e => setClientId(e.target.value)}>
+                <option value="">— Choisir —</option>
+                {clients.map(c => <option key={c.id} value={c.id}>{c.nom_client}</option>)}
+              </select>
+            </div>
+            {clientId && (() => {
+              const c = clients.find(x => x.id == clientId)
+              return c ? (
+                <div className="bg-bjc-50 rounded-lg p-3 text-xs space-y-1">
+                  <p className="font-medium text-bjc-700">{c.nom_client}</p>
+                  {c.telephone && <p className="text-gray-500">Tel : {c.telephone}</p>}
+                  {c.adresse && <p className="text-gray-500">{c.adresse}</p>}
+                </div>
+              ) : null
+            })()}
+          </div>
         </div>
-      ) : null
-    })()}
-  </div>
-</div>
+
         {/* Ajouter article */}
         <div className="card p-5">
           <h2 className="text-sm font-semibold text-gray-700 mb-3">Ajouter un article</h2>
