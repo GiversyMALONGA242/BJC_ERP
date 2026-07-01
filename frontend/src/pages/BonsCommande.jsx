@@ -16,6 +16,7 @@ const STATUT_STYLE = {
 }
 
 export default function BonsCommande() {
+  console.log("LE COMPOSANT BONSCOMMANDE EST CHARGÉ !");
   const api = useApi()
   const [bcs, setBcs]             = useState([])
   const [clients, setClients]     = useState([])
