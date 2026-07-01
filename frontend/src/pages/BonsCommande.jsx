@@ -279,81 +279,34 @@ export default function BonsCommande() {
 
 
   const validerBC = async () => {
-
-    if (!clientId)      return toast.error('Selectionnez un client')
-
+    if (!clientId)       return toast.error('Selectionnez un client')
     if (!articles.length) return toast.error('Ajoutez au moins un article')
-
     setSaving(true)
-
     try {
-
       if (mode === 'modifier' && detail) {
-
-        await api.put(`/api/bons-commande/${detail.id}`, {
-
-          id_client: parseInt(clientId), articles, notes })
-
-        toast.success('BC mis a jour')
-
+        await api.put(`/api/bons-commande/${detail.id}`, { id_client: parseInt(clientId), articles, notes })
+        toast.success('BC mis à jour')
       } else {
-
-        const res = await api.post('/api/bons-commande', {
-
-          id_client: parseInt(clientId), articles, notes })
-
-        toast.success(`BC ${res.numero_bc} cree !`)
-
+        const res = await api.post('/api/bons-commande', { id_client: parseInt(clientId), articles, notes })
+        toast.success(`BC ${res.numero_bc} créé !`)
       }
-
-      setMode('list'); setArticles([]); setClientId(''); setNotes('')
-
-      charger()
-
+      
+      // RÉINITIALISATION
+      setArticles([]); setClientId(''); setNotes('')
+      
+      // MODIFICATION CRUCIALE : Attendre le rechargement avant de fermer
+      await charger() 
+      setMode('list')
+      
       if (detail) {
-
         const d = await api.get(`/api/bons-commande/${detail.id}`)
-
         setDetail(d)
-
       }
-
-    } catch (err) { toast.error(err.message) }
-
+    } catch (err) { 
+      toast.error(err.message) 
+    }
     finally { setSaving(false) }
-
   }
-
-
-
-  const convertirFacture = async () => {
-
-    if (!detail) return
-
-    setSaving(true)
-
-    try {
-
-      const res = await api.post(`/api/bons-commande/${detail.id}/convertir-facture`, {
-
-        remise_taux: parseFloat(remise)||0, tva_active: tva, cad_active: cad })
-
-      setFactureRes(res)
-
-      toast.success(`Facture ${res.numero_facture} + BL ${res.numero_bl} crees !`)
-
-      setMode('list'); charger()
-
-      const d = await api.get(`/api/bons-commande/${detail.id}`)
-
-      setDetail(d)
-
-    } catch (err) { toast.error(err.message) }
-
-    finally { setSaving(false) }
-
-  }
-
 
 
   const changerStatut = async (statut) => {
