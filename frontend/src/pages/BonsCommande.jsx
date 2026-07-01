@@ -50,17 +50,27 @@ export default function BonsCommande() {
   // Impression
   const [printData, setPrintData] = useState(null)
 
-  const charger = () => {
-    setLoading(true)
-    Promise.all([
-      api.get('/api/bons-commande'),
-      api.get('/api/clients'),
-      api.get('/api/catalogue'),
-      api.get('/api/catalogue/categories')
-    ]).then(([b,c,cat,cats]) => { setBcs(b); setClients(c); setCatalogue(cat); setCategories(cats) })
-      .finally(() => setLoading(false))
-  }
-  useEffect(() => { charger() }, [])
+  const charger = async () => {
+    setLoading(true);
+    try {
+      // On lance les 4 requêtes séparément pour isoler l'erreur
+      const [b, c, cat, cats] = await Promise.all([
+        api.get('/api/bons-commande').catch(err => { console.error("Erreur BC:", err); return []; }),
+        api.get('/api/clients').catch(err => { console.error("Erreur Clients:", err); return []; }),
+        api.get('/api/catalogue').catch(err => { console.error("Erreur Catalogue:", err); return []; }),
+        api.get('/api/catalogue/categories').catch(err => { console.error("Erreur Categories:", err); return []; })
+      ]);
+      
+      setBcs(b);
+      setClients(c);
+      setCatalogue(cat);
+      setCategories(cats);
+    } catch (err) {
+      console.error("Erreur globale de chargement:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const selectBC = async (bc) => {
     setSelected(bc.id)
