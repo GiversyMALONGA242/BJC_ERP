@@ -50,15 +50,30 @@ export default function BonsCommande() {
   // Impression
   const [printData, setPrintData] = useState(null)
 
-  const charger = () => {
-    setLoading(true)
-    Promise.all([
-      api.get('/api/bons-commande'),
-      api.get('/api/clients'),
-      api.get('/api/catalogue'),
-      api.get('/api/catalogue/categories')
-    ]).then(([b,c,cat,cats]) => { setBcs(b); setClients(c); setCatalogue(cat); setCategories(cats) })
-      .finally(() => setLoading(false))
+  const charger = async () => {
+    setLoading(true);
+    
+    // Fonction utilitaire pour éviter qu'une erreur ne casse tout
+    const safeGet = async (url) => {
+      try {
+        const res = await api.get(url);
+        return res;
+      } catch (e) {
+        console.error(`Erreur chargement ${url}:`, e);
+        return []; // Retourne un tableau vide en cas d'erreur
+      }
+    };
+
+    const b = await safeGet('/api/bons-commande');
+    const c = await safeGet('/api/clients');
+    const cat = await safeGet('/api/catalogue');
+    const cats = await safeGet('/api/catalogue/categories');
+
+    setBcs(b);
+    setClients(c);
+    setCatalogue(cat);
+    setCategories(cats);
+    setLoading(false);
   }
   useEffect(() => { charger() }, [])
 
