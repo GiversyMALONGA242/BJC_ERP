@@ -214,7 +214,7 @@ export default function Ventes() {
                       <td className="py-1.5 text-gray-700">{d.designation_libre || d.service_nom}</td>
                       <td className="py-1.5 text-center">{d.quantite}</td>
                       <td className="py-1.5 text-right">{fmt(d.prix_vente_ht_applique)}</td>
-                      <td className="py-1.5 text-right font-medium">{fmt(d.total_ht_ligne)}</td>
+                      <td className="py-1.5 text-right font-medium">{fmt(d.total_ht_ligne ?? (d.quantite * d.prix_vente_ht_applique))}</td>
                     </tr>
                   ))}
                 </tbody>
