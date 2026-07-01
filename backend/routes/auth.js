@@ -10,7 +10,7 @@ router.get('/users-list', async (req, res) => {
   try {
     const [rows] = await pool.query(
       'SELECT nom_utilisateur, role FROM utilisateurs WHERE actif=1 ORDER BY nom_utilisateur');
-    res.json(rows);
+    res.json(rows.map(r => ({ nom_utilisateur: r.nom_utilisateur })));;
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
