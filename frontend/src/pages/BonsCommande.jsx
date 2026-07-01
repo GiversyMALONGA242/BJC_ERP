@@ -53,24 +53,29 @@ export default function BonsCommande() {
   const charger = async () => {
     setLoading(true);
     try {
-      // On lance les 4 requêtes séparément pour isoler l'erreur
-      const [b, c, cat, cats] = await Promise.all([
-        api.get('/api/bons-commande').catch(err => { console.error("Erreur BC:", err); return []; }),
-        api.get('/api/clients').catch(err => { console.error("Erreur Clients:", err); return []; }),
-        api.get('/api/catalogue').catch(err => { console.error("Erreur Catalogue:", err); return []; }),
-        api.get('/api/catalogue/categories').catch(err => { console.error("Erreur Categories:", err); return []; })
-      ]);
+      console.log("--- Début du chargement des données ---");
       
-      setBcs(b);
-      setClients(c);
-      setCatalogue(cat);
-      setCategories(cats);
+      const bcsData = await api.get('/api/bons-commande');
+      const clientsData = await api.get('/api/clients');
+      const catalogueData = await api.get('/api/catalogue');
+      const categoriesData = await api.get('/api/catalogue/categories');
+
+      console.log("BCs reçus :", bcsData);
+      console.log("Clients reçus :", clientsData);
+      console.log("Catalogue reçu :", catalogueData);
+      console.log("Catégories reçues :", categoriesData);
+
+      setBcs(Array.isArray(bcsData) ? bcsData : []);
+      setClients(Array.isArray(clientsData) ? clientsData : []);
+      setCatalogue(Array.isArray(catalogueData) ? catalogueData : []);
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      
     } catch (err) {
-      console.error("Erreur globale de chargement:", err);
+      console.error("ERREUR CRITIQUE DANS L'API :", err);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const selectBC = async (bc) => {
     setSelected(bc.id)
