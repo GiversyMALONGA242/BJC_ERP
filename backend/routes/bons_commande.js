@@ -13,7 +13,6 @@ async function nextNumeroBC(conn) {
 }
 
 // GET liste
-// GET liste
 router.get('/', async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -25,7 +24,7 @@ router.get('/', async (req, res) => {
       JOIN clients c ON bc.id_client=c.id
       LEFT JOIN utilisateurs u ON bc.id_utilisateur=u.id
       LEFT JOIN bons_commande_details bcd ON bc.id=bcd.id_bc
-      GROUP BY bc.id, u.nom_utilisateur  -- MODIFICATION ICI : ajout de u.nom_utilisateur
+      GROUP BY bc.id, c.nom_client, c.telephone, c.adresse, u.nom_utilisateur
       ORDER BY bc.date_commande DESC LIMIT 300`);
     res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
