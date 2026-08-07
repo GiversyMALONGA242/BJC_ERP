@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bjc-print-frontend.onrender.com/sitemap.xml
