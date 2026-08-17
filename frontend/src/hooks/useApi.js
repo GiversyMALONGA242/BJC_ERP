@@ -1,12 +1,12 @@
 import { useAuth } from './useAuth'
 
-const API_BASE = 'https://bjc-erp-backend.onrender.com'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://bjc-erp-backend.onrender.com'
 
 export function useApi() {
   const { token, logout } = useAuth()
 
   const request = async (url, options) => {
-    console.log("Token utilisé pour la requête :", token);
+    // SUPPRIME LE CONSOLE.LOG QUI FUIT LE TOKEN
     const opts = options || {}
     const fullUrl = API_BASE + url
     const res = await fetch(fullUrl, {
@@ -18,16 +18,21 @@ export function useApi() {
       body: opts.body || undefined
     })
     if (res.status === 401) { logout(); return }
-    const data = await res.json()
+    let data;
+    try {
+      data = await res.json()
+    } catch {
+      throw new Error('Erreur serveur');
+    }
     if (!res.ok) throw new Error(data.error || 'Erreur ' + res.status)
     return data
   }
 
   return {
-    get:    function(url)       { return request(url) },
-    post:   function(url, body) { return request(url, { method: 'POST',   body: JSON.stringify(body) }) },
-    put:    function(url, body) { return request(url, { method: 'PUT',    body: JSON.stringify(body) }) },
-    patch:  function(url, body) { return request(url, { method: 'PATCH',  body: JSON.stringify(body) }) },
-    delete: function(url)       { return request(url, { method: 'DELETE' }) }
+    get:    (url)       => request(url),
+    post:   (url, body) => request(url, { method: 'POST',   body: JSON.stringify(body) }),
+    put:    (url, body) => request(url, { method: 'PUT',    body: JSON.stringify(body) }),
+    patch:  (url, body) => request(url, { method: 'PATCH',  body: JSON.stringify(body) }),
+    delete: (url)       => request(url, { method: 'DELETE' })
   }
 }
