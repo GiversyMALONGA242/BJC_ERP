@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
+
+# Bloque les routes privées de l'ERP pour ne pas les indexer
+Disallow: /dashboard
+Disallow: /api/
+
 Sitemap: https://bjc-print-frontend.onrender.com/sitemap.xml
